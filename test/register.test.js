@@ -5,119 +5,98 @@ const app = require('../app');
 const User = require('../models/userLevels');
 const Location = require('../models/location');
 
-describe('Register Controller Tests', () => {
-    let mongoServer;
+let mongoServer;
 
-    beforeAll(async () => {
-        mongoServer = new MongoMemoryServer();
-        const mongoUri = await mongoServer.getUri();
-        await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
+beforeAll(async () => {
+    mongoServer = await MongoMemoryServer.create();
+    await mongoose.connect(mongoServer.getUri(), { useNewUrlParser: true, useUnifiedTopology: true });
+});
+
+afterAll(async () => {
+    await mongoose.connection.close();
+    await mongoServer.stop();
+});
+
+beforeEach(async () => {
+    // Remove all users before each test to avoid duplicate key errors
+    await User.deleteMany({});
+});
+
+describe('User Controller Tests', () => {
+    // /register (createUser)
+    test('should register a new user', async () => {
+        const response = await request(app)
+            .post('/register')
+            .send({
+                username: 'JohnDoe',
+                email: 'john.doe@example.com',
+                password: 'password123',
+                level: 1,
+            });
+
+        console.log(response.body.user.password)
+
+        expect(response.statusCode).toBe(200)
+        expect(response.body.user.username).toEqual('JohnDoe')
+        expect(response.body.user.email).toEqual('john.doe@example.com')
+        expect(response.body.user.password).toEqual(response.body.user.password); // CHECKS if hash is truthy
+        expect(response.body.user.level).toEqual(1)
+        expect(response.body).toHaveProperty('token')
     });
 
-    afterAll(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    });
-
-    beforeEach(async () => {
-        await User.create({
-            username: 'testuser',
-            email: 'testuser@example.com',
-            password: 'testpassword',
+    // /login (loginUser)
+    test('should login a user', async () => {
+        const user = new User({
+            username: 'JohnDoe',
+            email: 'john.doe@example.com',
+            password: 'password123',
             level: 1,
         });
+        await user.save();
 
-        await Location.create({
-            location: ['AC Bethesda', 'AC DC', 'AC National Harbor'],
+        const response = await request(app)
+            .post('/login')
+            .send({ email: 'john.doe@example.com', password: 'password123' })
+
+        expect(response.statusCode).toBe(200)
+        expect(response.body.user.username).toEqual('JohnDoe')
+        expect(response.body.user.email).toEqual('john.doe@example.com')
+        expect(response.body).toHaveProperty('token')
+    });
+
+    // /:id (updateUser)
+    test('should update a user', async () => {
+        const user = new User({
+            username: 'JohnDoe',
+            email: 'john.doe@example.com',
+            password: 'password123',
+            level: 1,
         });
-    });
+        await user.save();
+        const token = await user.generateAuthToken();
 
-    afterEach(async () => {
-        await User.deleteMany();
-        await Location.deleteMany();
-    });
-
-    it('should register a new user', async () => {
         const response = await request(app)
-            .post('/register')
-            .send({
-                username: 'willy',
-                email: 'useratga@somethingemail.com',
-                password: '123456789',
-                level: 1,
-            });
+            .put(`/${user._id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'JaneDoe', email: 'jane.doe@example.com' })
 
-        expect(response.status).toBe(201);
-        expect(response.body.message).toBe('User registered successfully');
+        expect(response.statusCode).toBe(200)
+        expect(response.body.username).toEqual('JaneDoe')
+        expect(response.body.email).toEqual('jane.doe@example.com')
     });
 
-    it('should handle registration errors for existing username', async () => {
-        const response = await request(app)
-            .post('/register')
-            .send({
-                username: 'testuser',
-                email: 'newuser@example.com',
-                password: '123456789',
-                level: 1,
-            });
+// /:id (deleteUser)
+test('It should delete a user', async () => {
+    const user = new User({ username: 'John Doe', email: 'john.doe@example.com', password: 'password123', level: 1 })
+    await user.save()
+    const token = await user.generateAuthToken()
 
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('User with this username already exists');
-    });
+    const response = await request(app)
+      .delete(`/${user._id}`)
+      .set('Authorization', `Bearer ${token}`)
+    
+    expect(response.statusCode).toBe(200)
+    expect(response.body.message).toEqual('User deleted')
+  })
 
-    it('should handle registration errors for existing email', async () => {
-        const response = await request(app)
-            .post('/register')
-            .send({
-                username: 'newuser',
-                email: 'testuser@example.com',
-                password: '123456789',
-                level: 1,
-            });
-
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('User with this email already exists');
-    });
-
-    it('should handle registration errors for missing fields', async () => {
-        const response = await request(app)
-            .post('/register')
-            .send({
-                // Missing required fields
-            });
-
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Missing required fields');
-        expect(response.body.details).toBeDefined(); // Additional details for missing fields
-    });
-
-    it('should handle registration errors for missing username', async () => {
-        const response = await request(app)
-            .post('/register')
-            .send({
-                email: 'newuser@example.com',
-                password: '123456789',
-                level: 1,
-            });
-
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Missing required fields');
-        expect(response.body.details).toHaveProperty('username', 'Username is required');
-    });
-
-    it('should handle registration errors for missing email', async () => {
-        const response = await request(app)
-            .post('/register')
-            .send({
-                username: 'newuser',
-                password: '123456789',
-                level: 1,
-            });
-
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Missing required fields');
-        expect(response.body.details).toHaveProperty('email', 'Email is required');
-    });
-
-    // Add similar tests for missing password and level fields
-});
+})

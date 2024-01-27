@@ -13,17 +13,17 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save', async function(next) {
     if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 8);
+        this.password = await bcrypt.hash(this.password, 8)
     }
-    next();
+    next()
 });
 
 userSchema.methods.generateAuthToken = async function() {
-    const secretKey = process.env.SECRET; // Pulling the secre key for the .env file SECRET=TOKEN
-    const token = jwt.sign({ _id: this._id, username: this.username, email: this.email, level: this.level }, secretKey);
-    return token;
+    const secretKey = process.env.JWT_SECRET  // DECLARED KEY IN ENV
+    const token = jwt.sign({ _id: this._id }, secretKey)
+    return token
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema)
 
 module.exports = User;

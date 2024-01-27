@@ -1,13 +1,13 @@
-// create the express app object and add my middleware
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const loginRouter = require('./routes/loginRouter');
 
-// middleware
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app register router
-app.use('/login', loginRouter);
+// Mount the loginRouter at the base path "/"
+app.use('/', loginRouter);
 
 module.exports = app;
