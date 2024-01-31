@@ -18,7 +18,6 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-    // Remove all users before each test to avoid duplicate key errors
     await User.deleteMany({});
 });
 
@@ -31,16 +30,18 @@ describe('User Controller Tests', () => {
                 username: 'JohnDoe',
                 email: 'john.doe@example.com',
                 password: 'password123',
+                location: 'AC Bethesda',
                 level: 1,
             });
 
-        console.log(response.body.user.password)
+        console.log(response.body)
 
         expect(response.statusCode).toBe(200)
         expect(response.body.user.username).toEqual('JohnDoe')
         expect(response.body.user.email).toEqual('john.doe@example.com')
         expect(response.body.user.password).toEqual(response.body.user.password); // CHECKS if hash is truthy
         expect(response.body.user.level).toEqual(1)
+        expect(response.body.user.location).toEqual('AC Bethesda')
         expect(response.body).toHaveProperty('token')
     });
 

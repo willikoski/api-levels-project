@@ -29,25 +29,34 @@ exports.auth = async (req, res, next) => {
 exports.createUser = async (req, res) => {
     try {
         const { username, email, password, level, location } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 8)
-        // creating new user
-        const user = new User({ username, email, password: hashedPassword, level })
+        const hashedPassword = await bcrypt.hash(password, 8);
 
-        // check the location model schema
+        // Create a new user
+        const user = new User({ username, email, password: hashedPassword, level });
+
+        // Check if location is provided
         if (location) {
-            const newLocation = new Location({ location })
-            await newLocation.save()
-            user.location = newLocation._id; // Assuming your User model has a location field
+            // Try to find an existing location
+            let existingLocation = await Location.findOne({ location });
+
+            // If the location doesn't exist, create a new one
+            if (!existingLocation) {
+                existingLocation = new Location({ location });
+                await existingLocation.save();
+            }
+
+            // Associate the user with the location
+            user.location = existingLocation._id;
         }
 
         // Save the user
         await user.save();
 
-        const token = await user.generateAuthToken()
-        res.status(200).json({ user, token })
+        const token = await user.generateAuthToken();
+        res.status(200).json({ user: { ...user.toObject(), location }, token }); // lets make location part of the USER by method OF Populated
     } catch (error) {
-        console.error(error.message) // Log the error message
-        res.status(400).json({ message: error.message })
+        console.error(error.message);
+        res.status(400).json({ message: error.message });
     }
 };
 
