@@ -35,7 +35,7 @@ exports.createCompany = async (req, res) => {
         // console.log('Request Body:', req.body)
         // console.log('Saved Company:', savedCompany) // wheres the error at
 
-        // print creating so you can crab id
+        // print creating so you can grab id
         res.status(201).json({ company: savedCompany, message: 'Company created successfully' })
     } catch (error) {
         console.error(error.message)
@@ -51,23 +51,18 @@ exports.createLocation = async (req, res) => {
             throw new Error('Invalid request data')
         }
 
-        // Check if the company exists
-        const existingCompany = await Company.findOne({ _id: company })
+        const existingCompany = await Company.findOne({ _id: company }) // does the company exicts
 
         if (!existingCompany) {
             throw new Error('Company not found')
         }
 
-        // Add new locations to the existing company
-        for (const loc of locations) {
+        for (const loc of locations) { // push new locations in the array 
             existingCompany.locations.push({ location: loc })
         }
+        await existingCompany.save() // save company with ^ locations
 
-        // Save the updated company with new locations
-        await existingCompany.save()
-
-        // Send the company ID in the response
-        res.status(201).json({
+        res.status(201).json({ // we want to print out the company id 
             company: {
                 company: existingCompany.company,
                 _id: existingCompany._id,
@@ -104,8 +99,7 @@ exports.createUser = async (req, res) => {
             throw new Error('No locations provided')
         }
 
-        // Check if the specified locations exist for the company
-        const existingLocations = existingCompany.locations.filter(loc => locations.includes(loc._id.toString()))
+        const existingLocations = existingCompany.locations.filter(loc => locations.includes(loc._id.toString())) // does the location exists in the company?
         if (existingLocations.length !== locations.length) {
             throw new Error('One or more locations not found in the specified company')
         }
