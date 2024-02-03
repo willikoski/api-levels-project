@@ -42,27 +42,39 @@ MONGO_URI=mongodb+srv://USERNAME:PASSWORD@DATABASEBLOCK.zjvqipx.mongodb.net/DATA
 -npm run dev
 -npm test
 ```
-**Model Schemas**
 
-**User:** Username - Required 
-| email - Required  
-| password - Required 
-| company - ObjectID - Required 
-| locations - ObjectID - Required 
-| level - Default 1 - Required
-**Company:** Company - Required 
-[Locations] Array / users may be part of multiple locations
-**Location:** Location - String - Required 
+## Model Schemas
 
-**Router Page - LoginRouter.js**
+**User:**
+
+- `username` (Required)
+- `email` (Required)
+- `password` (Required)
+- `company` (ObjectID - Required)
+- `locations` (ObjectID - Required)
+- `level` (Default 1 - Required)
+
+**Company:**
+
+- `company` (Required)
+- `locations` (Array / users may be part of multiple locations)
+
+**Location:**
+
+- `location` (String - Required)
+
+## Router Page - LoginRouter.js
+
 **User Router**
- - router.post('/register', userController.createUser)
- - router.post('/login', userController.loginUser)
- - router.put('/:id', userController.updateUser)
- - router.delete('/:id', userController.auth, userController.deleteUser)
- 
-  **Company and Location Routes** 
- - router.post('/createCompany', userController.createCompany)
- - router.post('/createLocation', userController.createLocation)
+
+- `POST /register` - Create a new user
+- `POST /login` - User login
+- `PUT /:id` - Update user information
+- `DELETE /:id` - Delete user (Authentication required)
+
+**Company and Location Routes**
+
+- `POST /createCompany` - Create a new company
+- `POST /createLocation` - Create a new location
 
   
