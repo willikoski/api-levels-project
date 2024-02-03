@@ -1,17 +1,21 @@
 ****My API - Company - Location Project**
 
-Installation**
-
- - Make a main directory in your command line
- - Git init (Create a Folder)
- - Touch/Create 3 files server.js .env .gitignore (assuming you'll push to github)
+**Installation****
+Make a directory where you'd like the api installed
+```
+mkdir API-William
+cd API-William
+git clone https://github.com/willikoski/api-levels-project.git
+cd api-levels-project/
+```
+ - Git init (Once inside)
+ - Touch/Create 2 files .env .gitignore (assuming you'll push to github)
  -Inside your env file you will need to update the following sample sheet. (.env should never be shared)
  -You can grab a sha random generated key here: [SHA256 Generator Key](https://emn178.github.io/online-tools/sha256.html)
  ```
  JWT_SECRET=SHA GENERATE KEY
 MONGO_URI=mongodb+srv://USERNAME:PASSWORD@DATABASEBLOCK.zjvqipx.mongodb.net/DATABASENAME?retryWrites=true&w=majority 
 ```
- 
  - Npm init -y 
  - Npm i express dotenv crypt jsonwebtoken mongoose (Packages we need installed)
  - Npm i -D nodemon jest supertest (Packages we need installed)
