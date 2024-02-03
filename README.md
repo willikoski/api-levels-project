@@ -116,7 +116,7 @@ MONGO_URI=mongodb+srv://USERNAME:PASSWORD@DATABASEBLOCK.zjvqipx.mongodb.net/DATA
   }
  ```
   **Delete User:**
-  ```
+  
   Must need bearer token of user created
   localhost:3000/IDHERE
-  ```
+  
