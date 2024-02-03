@@ -1,13 +1,13 @@
-require('dotenv').config();
-const express = require('express');
-const app = express();
-const loginRouter = require('./routes/loginRouter');
+require('dotenv').config()
+const express = require('express')
+const app = express()
+const loginRouter = require('./routes/loginRouter')
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 // Mount the loginRouter at the base path "/"
-app.use('/', loginRouter);
+app.use('/', loginRouter)
 
 module.exports = app;
