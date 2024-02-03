@@ -1,12 +1,16 @@
-**My API - Company - Location Project**
+
+# My API - Company - Location Project
 
 **Installation**
-Make a directory where you'd like the api installed
-```
+
+Create a directory where you'd like the API installed:
+
+```bash
 mkdir API-William
 cd API-William
 git clone https://github.com/willikoski/api-levels-project.git
 cd api-levels-project/
+
 ```
  - Git init (Once inside)
  - Touch/Create 2 files .env .gitignore (assuming you'll push to github)
