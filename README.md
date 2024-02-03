@@ -81,4 +81,40 @@ MONGO_URI=mongodb+srv://USERNAME:PASSWORD@DATABASEBLOCK.zjvqipx.mongodb.net/DATA
 - `POST /createCompany` - Create a new company
 - `POST /createLocation` - Create a new location
 
-  
+  ## Post Man
+  **Create Company:**
+  ```
+  {
+  "company": "test"
+  }
+  ```
+  **Create Location:**
+  ```
+  {
+  "company": "", // Id of company in here
+  "locations": ["AC Bethesda", "AC DC", "AC OCEAN CITY"]
+  }
+  ```
+  **Create User:**
+  ```
+  {
+    "username": "test",
+    "email": "test.doe@example.com",
+    "password": "password123",
+    "company": "", // NAME of company
+    "locations": [""], // locations ID of all created in any company block 
+    "level": 1
+  }
+  ```
+  **Update:**
+  ```
+  {
+    "password": "",
+    "company": "", // OBJ ID OF COMPANY
+    "locations": [""], // OBJ ID OF LOCATION I WANT ADDED
+    "level": 2
+  }
+ ```
+ **Delete User:**
+Must need bearer token of user created
+localhost:3000/IDHERE
