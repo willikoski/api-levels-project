@@ -1,6 +1,6 @@
-****My API - Company - Location Project**
+**My API - Company - Location Project**
 
-**Installation****
+**Installation**
 Make a directory where you'd like the api installed
 ```
 mkdir API-William
